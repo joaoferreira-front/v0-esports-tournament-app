@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Trophy, RotateCcw, Users, Target, Award } from "lucide-react"
+import { Trophy, RotateCcw, Users, Target, Award, Crown, Star, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
 import TeamSetup from "@/components/tournament/team-setup"
 import GroupStage from "@/components/tournament/group-stage"
 import Playoffs from "@/components/tournament/playoffs"
@@ -104,6 +105,8 @@ export default function TournamentManager() {
     }
   }
 
+  const champion = tournament?.playoffs?.final?.winner
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
@@ -142,7 +145,9 @@ export default function TournamentManager() {
                 <span className="text-sm font-medium">Playoffs (MD3/MD5)</span>
               </div>
               <div className="h-px flex-1 bg-border" />
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div
+                className={`flex items-center gap-2 ${stage === "complete" ? "text-accent" : "text-muted-foreground"}`}
+              >
                 <Award className="h-4 w-4" />
                 <span className="text-sm font-medium">Campeão</span>
               </div>
@@ -161,6 +166,104 @@ export default function TournamentManager() {
 
         {stage === "playoffs" && tournament && tournament.playoffs && (
           <Playoffs tournament={tournament} onUpdate={setTournament} onComplete={() => setStage("complete")} />
+        )}
+
+        {stage === "complete" && champion && (
+          <div className="max-w-3xl mx-auto space-y-8">
+            {/* Celebração principal */}
+            <Card className="p-12 text-center glow-accent bg-gradient-to-br from-accent/20 via-card to-primary/10 border-accent relative overflow-hidden">
+              {/* Efeitos de fundo */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-10 left-10 w-20 h-20 bg-accent/20 rounded-full blur-3xl animate-pulse" />
+                <div
+                  className="absolute bottom-10 right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl animate-pulse"
+                  style={{ animationDelay: "0.5s" }}
+                />
+                <div
+                  className="absolute top-1/2 left-1/4 w-16 h-16 bg-secondary/20 rounded-full blur-2xl animate-pulse"
+                  style={{ animationDelay: "1s" }}
+                />
+              </div>
+
+              <div className="relative z-10">
+                {/* Coroa animada */}
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <Crown
+                      className="h-24 w-24 md:h-32 md:w-32 text-accent animate-bounce"
+                      style={{ animationDuration: "2s" }}
+                    />
+                    <div className="absolute inset-0 blur-3xl bg-accent/50 animate-pulse-glow" />
+                    <Sparkles className="absolute -top-2 -right-2 h-8 w-8 text-yellow-400 animate-pulse" />
+                    <Sparkles
+                      className="absolute -bottom-2 -left-2 h-6 w-6 text-yellow-400 animate-pulse"
+                      style={{ animationDelay: "0.3s" }}
+                    />
+                    <Star
+                      className="absolute top-0 -left-4 h-5 w-5 text-accent animate-pulse"
+                      style={{ animationDelay: "0.6s" }}
+                    />
+                  </div>
+                </div>
+
+                {/* Nome do campeão */}
+                <h2 className="text-4xl md:text-6xl font-extrabold mb-4 gradient-text">{champion.name}</h2>
+
+                {/* Título */}
+                <div className="flex items-center justify-center gap-2 mb-6">
+                  <Trophy className="h-6 w-6 text-accent" />
+                  <p className="text-2xl md:text-3xl text-accent font-bold tracking-wider uppercase">
+                    Campeão do Torneio!
+                  </p>
+                  <Trophy className="h-6 w-6 text-accent" />
+                </div>
+
+                {/* Linha decorativa */}
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <div className="h-px w-16 bg-gradient-to-r from-transparent to-accent" />
+                  <Star className="h-4 w-4 text-accent" />
+                  <div className="h-px w-16 bg-gradient-to-l from-transparent to-accent" />
+                </div>
+
+                {/* Mensagem */}
+                <p className="text-lg text-muted-foreground">Parabéns ao time vencedor por conquistar o título!</p>
+              </div>
+            </Card>
+
+            {/* Estatísticas finais */}
+            <Card className="p-6 glow-border">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <Award className="h-5 w-5 text-primary" />
+                Resumo do Torneio
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-background rounded-lg">
+                  <p className="text-3xl font-bold text-primary">{tournament?.teams.length || 0}</p>
+                  <p className="text-sm text-muted-foreground">Times</p>
+                </div>
+                <div className="text-center p-4 bg-background rounded-lg">
+                  <p className="text-3xl font-bold text-secondary">{tournament?.groupMatches.length || 0}</p>
+                  <p className="text-sm text-muted-foreground">Partidas Fase de Grupos</p>
+                </div>
+                <div className="text-center p-4 bg-background rounded-lg">
+                  <p className="text-3xl font-bold text-accent">7</p>
+                  <p className="text-sm text-muted-foreground">Partidas Playoffs</p>
+                </div>
+                <div className="text-center p-4 bg-background rounded-lg">
+                  <p className="text-3xl font-bold text-primary">1</p>
+                  <p className="text-sm text-muted-foreground">Campeão</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Botão para novo torneio */}
+            <div className="text-center">
+              <Button onClick={handleReset} size="lg" className="gap-2">
+                <RotateCcw className="h-5 w-5" />
+                Iniciar Novo Torneio
+              </Button>
+            </div>
+          </div>
         )}
       </main>
 
